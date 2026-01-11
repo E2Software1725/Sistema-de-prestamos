@@ -26,14 +26,14 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['e2software1725.pythonanywhere.com']
 
 RENDER_EXTERNAL_HOSTNAME = env('RENDER_EXTERNAL_HOSTNAME', default=None)
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # For local development
-if not DEBUG:
+if DEBUG:
     ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost'])
 
 
@@ -90,7 +90,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db_url('DATABASE_URL', default='sqlite:///db.sqlite3')
+    'default': env.db_url(
+        'DATABASE_URL',
+        default=f"sqlite:///{os.path.join(BASE_DIR.parent, 'db.sqlite3')}"
+    )
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
