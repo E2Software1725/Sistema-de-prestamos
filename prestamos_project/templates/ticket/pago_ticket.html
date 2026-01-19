@@ -47,6 +47,13 @@
             margin-top: 15px;
             font-size: 10px;
         }
+
+        @media print {
+            body, .ticket {
+                margin: 0;
+                padding: 0;
+            }
+        }
     </style>
     {% endwith %}
 </head>
