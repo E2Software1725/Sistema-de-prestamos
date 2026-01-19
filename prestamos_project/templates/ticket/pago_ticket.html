@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo de Pago</title>
+    {% with impresora_configuracion as printer_cfg %}
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            width: {{ printer_cfg.ancho_papel_px|default:300 }}px;
+            margin: 0 auto;
+            font-size: 12px;
+        }
+        .ticket {
+            padding-top: {{ printer_cfg.margen_superior_px|default:10 }}px;
+            padding-bottom: {{ printer_cfg.margen_inferior_px|default:10 }}px;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        .header, .footer {
+            text-align: center;
+        }
+        .header img {
+            max-width: 150px;
+            margin-bottom: 5px;
+        }
+        .header h4, .header p {
+            margin: 0;
+        }
+        .info-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 2px 0;
+        }
+        .info-table .label {
+            font-weight: bold;
+            width: 40%;
+        }
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+        .footer {
+            margin-top: 15px;
+            font-size: 10px;
+        }
+    </style>
+    {% endwith %}
+</head>
+<body onload="window.print();">
+
+    <div class="ticket">
+        {% if empresa_configuracion %}
+            <div class="header">
+                {% if impresora_configuracion.incluir_logo and empresa_configuracion.logo %}
+                    <img src="{{ empresa_configuracion.logo.url }}" alt="Logo">
+                {% endif %}
+                <h4>{{ empresa_configuracion.nombre }}</h4>
+                {% if empresa_configuracion.rnc %}<p>RNC: {{ empresa_configuracion.rnc }}</p>{% endif %}
+                {% if empresa_configuracion.direccion %}<p>{{ empresa_configuracion.direccion }}</p>{% endif %}
+                {% if empresa_configuracion.telefono %}<p>Tel: {{ empresa_configuracion.telefono }}</p>{% endif %}
+            </div>
+        {% endif %}
+
+        <div class="divider"></div>
+        <h5 style="text-align: center; margin: 5px 0;">RECIBO DE PAGO</h5>
+        <div class="divider"></div>
+
+        <table class="info-table">
+            <tr>
+                <td class="label">Fecha:</td>
+                <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
+            </tr>
+            <tr>
+                <td class="label">Cliente:</td>
+                <td>{{ pago.cuota.prestamo.cliente }}</td>
+            </tr>
+            <tr>
+                <td class="label">Préstamo #:</td>
+                <td>{{ pago.cuota.prestamo.id }}</td>
+            </tr>
+            <tr>
+                <td class="label">Cuota #:</td>
+                <td>{{ pago.cuota.numero_cuota }}</td>
+            </tr>
+        </table>
+
+        <div class="divider"></div>
+
+        <table class="info-table">
+            <tr>
+                <td class="label">Monto Pagado:</td>
+                <td>${{ pago.monto_pagado|stringformat:",.2f" }}</td>
+            </tr>
+        </table>
+        
+        <div class="divider"></div>
+
+        <div class="footer">
+            <p>¡Gracias por su pago!</p>
+        </div>
+    </div>
+
+</body>
+</html>

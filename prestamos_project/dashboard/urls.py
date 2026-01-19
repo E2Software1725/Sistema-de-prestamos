@@ -2,6 +2,7 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 from . import views_cbv
+from gestion_prestamos import views as gestion_views
 
 # URLs del Portal de Clientes
 portal_patterns = [
@@ -55,6 +56,7 @@ urlpatterns = [
     # --- URLs para Pagos ---
     # Muestra el formulario para registrar un nuevo pago.
     path('pagos/nuevo/<int:loan_id>/', views.payment_add, name='payment_add'),
+    path('pago/<int:pago_id>/ticket/', gestion_views.pago_ticket, name='pago_ticket'),
 
     # --- URLs para Cobros ---
     path('cobros/', views.cobros_list, name='cobros_list'),

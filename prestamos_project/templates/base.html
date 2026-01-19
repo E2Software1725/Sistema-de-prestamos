@@ -54,11 +54,23 @@
 
         <!-- Logo de la empresa a la izquierda -->
         <a class="navbar-brand" href="{% url 'panel_informativo' %}">
-            <img src="{% static 'img/LogoHEM.png' %}" alt="HEM Lending Logo" style="height: 50px; vertical-align: middle;" class="me-2">
-            <span style="vertical-align: middle;">
-                <strong class="d-block" style="font-size: 1.2rem; color: #2c3e50;">HEM Lending</strong>
-                <small class="d-block" style="font-size: 0.8rem; color: #566573;">Dinero rápido, decisiones inteligentes.</small>
-            </span>
+            {% if empresa_configuracion %}
+                {% if empresa_configuracion.logo %}
+                    <img src="{{ empresa_configuracion.logo.url }}" alt="{{ empresa_configuracion.nombre }} Logo" style="height: 50px; vertical-align: middle;" class="me-2">
+                {% endif %}
+                <span style="vertical-align: middle;">
+                    <strong class="d-block" style="font-size: 1.2rem; color: #2c3e50;">{{ empresa_configuracion.nombre }}</strong>
+                    {% if empresa_configuracion.rnc %}
+                    <small class="d-block" style="font-size: 0.8rem; color: #566573;">RNC: {{ empresa_configuracion.rnc }}</small>
+                    {% endif %}
+                </span>
+            {% else %}
+                <img src="{% static 'img/LogoHEM.png' %}" alt="HEM Lending Logo" style="height: 50px; vertical-align: middle;" class="me-2">
+                <span style="vertical-align: middle;">
+                    <strong class="d-block" style="font-size: 1.2rem; color: #2c3e50;">HEM Lending</strong>
+                    <small class="d-block" style="font-size: 0.8rem; color: #566573;">Dinero rápido, decisiones inteligentes.</small>
+                </span>
+            {% endif %}
         </a>
         
         <!-- Navegación de usuario a la derecha (usando Dropdown de Bootstrap) -->

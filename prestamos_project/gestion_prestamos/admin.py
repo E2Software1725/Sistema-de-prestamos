@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import Cliente, Prestamo, Cuota, Pago, TipoPrestamo, Capital, TipoGasto, GastoPrestamo
+from .models import Cliente, Prestamo, Cuota, Pago, TipoPrestamo, Capital, TipoGasto, GastoPrestamo, Garante, Requisito, EmpresaConfiguracion, ImpresoraConfiguracion
 from django.contrib.auth.models import User
 import secrets
 import string
@@ -126,3 +126,55 @@ class CapitalAdmin(admin.ModelAdmin):
 class TipoGastoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'descripcion')
     search_fields = ('nombre',)
+
+@admin.register(Garante)
+class GaranteAdmin(admin.ModelAdmin):
+    list_display = ('nombre_completo', 'cedula', 'lugar_trabajo', 'ingresos_mensuales')
+    search_fields = ('nombre_completo', 'cedula')
+
+@admin.register(Pago)
+class PagoAdmin(admin.ModelAdmin):
+    list_display = ('cuota', 'monto_pagado', 'fecha_pago')
+    search_fields = ('cuota__prestamo__cliente__nombres', 'cuota__prestamo__cliente__apellidos')
+    list_filter = ('fecha_pago',)
+
+@admin.register(Requisito)
+class RequisitoAdmin(admin.ModelAdmin):
+    list_display = ('prestamo', 'tipo', 'descripcion', 'valor_estimado')
+    search_fields = ('prestamo__cliente__nombres', 'prestamo__cliente__apellidos', 'tipo', 'descripcion')
+    list_filter = ('tipo',)
+
+# Also explicitly register GastoPrestamo and Cuota for direct access, even though they are Inlines
+@admin.register(GastoPrestamo)
+class GastoPrestamoAdmin(admin.ModelAdmin):
+    list_display = ('prestamo', 'tipo_gasto', 'monto', 'fecha_creacion')
+    search_fields = ('prestamo__cliente__nombres', 'prestamo__cliente__apellidos', 'tipo_gasto__nombre')
+    list_filter = ('tipo_gasto', 'fecha_creacion')
+
+@admin.register(Cuota)
+class CuotaAdmin(admin.ModelAdmin):
+    list_display = ('prestamo', 'numero_cuota', 'fecha_vencimiento', 'monto_cuota', 'estado', 'monto_penalidad_acumulada')
+    search_fields = ('prestamo__cliente__nombres', 'prestamo__cliente__apellidos')
+    list_filter = ('estado', 'fecha_vencimiento')
+    readonly_fields = ('monto_total_a_pagar', 'total_pagado', 'saldo_pendiente') # Add some properties for viewing
+
+@admin.register(EmpresaConfiguracion)
+class EmpresaConfiguracionAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'rnc', 'telefono', 'email')
+    fieldsets = (
+        (None, {
+            'fields': ('nombre', 'rnc', 'direccion', 'telefono', 'email', 'logo')
+        }),
+    )
+
+    def has_add_permission(self, request):
+        # Deshabilita el botón "Añadir" si ya existe una configuración
+        return not EmpresaConfiguracion.objects.exists()
+
+@admin.register(ImpresoraConfiguracion)
+class ImpresoraConfiguracionAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'ancho_papel_px', 'incluir_logo')
+
+    def has_add_permission(self, request):
+        # Deshabilita el botón "Añadir" si ya existe una configuración
+        return not ImpresoraConfiguracion.objects.exists()

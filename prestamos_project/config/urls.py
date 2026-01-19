@@ -8,6 +8,8 @@ from django.contrib import admin
 from django.urls import path, include
 # Se importan las vistas de Login y Logout que Django ya trae incorporadas.
 from django.contrib.auth.views import LoginView, LogoutView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     # Ruta para el panel de administración de Django.
@@ -31,3 +33,7 @@ urlpatterns = [
     # Esto mantiene el proyecto organizado, ya que cada app gestiona sus propias URLs.
     path('', include('dashboard.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

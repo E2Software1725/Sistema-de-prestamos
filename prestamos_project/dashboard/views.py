@@ -306,6 +306,7 @@ def loan_detail(request, pk):
     """Muestra los detalles de un préstamo específico y sus cuotas."""
     prestamo = get_object_or_404(Prestamo, pk=pk)
     cuotas = prestamo.cuotas.all().order_by('numero_cuota')
+    pagos = Pago.objects.filter(cuota__prestamo=prestamo).order_by('-fecha_pago')
     hoy = timezone.now().date()
 
     # Bucle para calcular penalidades y estado de cada cuota ANTES de agregar
@@ -339,6 +340,7 @@ def loan_detail(request, pk):
     context = {
         'el_prestamo_actual': prestamo,
         'cuotas_del_prestamo': cuotas,
+        'pagos_del_prestamo': pagos,
         'totales_amortizacion': totales_amortizacion,
         'pago_total_realizado': total_pagado,
         'ganancia_estimada': ganancia_estimada,

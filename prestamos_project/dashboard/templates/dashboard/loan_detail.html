@@ -188,5 +188,37 @@
             <span class="summary-value">${{ totales_amortizacion.total_penalidad|format_number }}</span>
         </div>
     </div>
+
+    <h3 style="margin-top: 2rem;">Historial de Pagos</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fecha de Pago</th>
+                    <th>Monto Pagado</th>
+                    <th>Cuota #</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in pagos_del_prestamo %}
+                <tr>
+                    <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
+                    <td>${{ pago.monto_pagado|intcomma }}</td>
+                    <td>{{ pago.cuota.numero_cuota }}</td>
+                    <td>
+                        <a href="{% url 'pago_ticket' pago.id %}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                            <i class="fas fa-print"></i> Imprimir
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No se han registrado pagos para este préstamo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

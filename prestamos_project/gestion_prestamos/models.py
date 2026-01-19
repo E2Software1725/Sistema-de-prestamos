@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, UniqueConstraint
 from decimal import Decimal
@@ -468,3 +469,51 @@ class Requisito(models.Model):
     class Meta:
         verbose_name = "Requisito"
         verbose_name_plural = "Requisitos"
+
+# ==================================================
+# === MODELO CONFIGURACIÓN DE LA EMPRESA ===
+# ==================================================
+# Almacena la información de la empresa.
+class EmpresaConfiguracion(models.Model):
+    nombre = models.CharField(max_length=255, verbose_name="Nombre de la Empresa")
+    rnc = models.CharField(max_length=50, blank=True, null=True, verbose_name="RNC o Identificación Fiscal")
+    direccion = models.TextField(blank=True, null=True, verbose_name="Dirección")
+    telefono = models.CharField(max_length=50, blank=True, null=True, verbose_name="Teléfono")
+    email = models.EmailField(blank=True, null=True, verbose_name="Correo Electrónico")
+    logo = models.ImageField(upload_to='logos/', blank=True, null=True, verbose_name="Logo de la Empresa")
+
+    def __str__(self):
+        return self.nombre
+
+    def save(self, *args, **kwargs):
+        if not self.pk and EmpresaConfiguracion.objects.exists():
+            # No permitir la creación de un nuevo objeto si ya existe uno.
+            raise ValidationError('Solo puede existir una configuración de empresa.')
+        return super(EmpresaConfiguracion, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Configuración de la Empresa"
+        verbose_name_plural = "Configuración de la Empresa"
+
+# ==================================================
+# === MODELO CONFIGURACIÓN DE IMPRESORA ===
+# ==================================================
+# Almacena la configuración para la impresión de tiques.
+class ImpresoraConfiguracion(models.Model):
+    nombre = models.CharField(max_length=100, default="Impresora de Tiques Principal", verbose_name="Nombre de la Configuración")
+    ancho_papel_px = models.PositiveIntegerField(default=300, verbose_name="Ancho del Papel (en píxeles)")
+    incluir_logo = models.BooleanField(default=True, verbose_name="¿Incluir logo en el recibo?")
+    margen_superior_px = models.PositiveIntegerField(default=10, verbose_name="Margen Superior (en píxeles)")
+    margen_inferior_px = models.PositiveIntegerField(default=10, verbose_name="Margen Inferior (en píxeles)")
+
+    def __str__(self):
+        return self.nombre
+
+    def save(self, *args, **kwargs):
+        if not self.pk and ImpresoraConfiguracion.objects.exists():
+            raise ValidationError('Solo puede existir una configuración de impresora.')
+        return super(ImpresoraConfiguracion, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Configuración de Impresora"
+        verbose_name_plural = "Configuración de Impresora"

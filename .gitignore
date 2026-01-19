@@ -25,5 +25,9 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Media files
+mediafiles/
+prestamos_project/logos/
+
 # Excluir ejecutables
 *.exe
